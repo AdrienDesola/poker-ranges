@@ -1,3 +1,47 @@
+/* CSS Variables for theming */
+:root {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f7fafc;
+    --text-primary: #333333;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --accent-color: #667eea;
+    --accent-secondary: #764ba2;
+    --success-color: #48bb78;
+    --warning-color: #ed8936;
+    --error-color: #e53e3e;
+    --raise-bg: #48bb78;
+    --call-bg: #ed8936;
+    --fold-bg: #e53e3e;
+    --neutral-bg: #a0aec0;
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1a202c;
+        --bg-secondary: #2d3748;
+        --bg-tertiary: #4a5568;
+        --text-primary: #f7fafc;
+        --text-secondary: #e2e8f0;
+        --text-muted: #a0aec0;
+        --border-color: #4a5568;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        --accent-color: #667eea;
+        --accent-secondary: #764ba2;
+        --success-color: #48bb78;
+        --warning-color: #ed8936;
+        --error-color: #e53e3e;
+        --raise-bg: #48bb78;
+        --call-bg: #ed8936;
+        --fold-bg: #e53e3e;
+        --neutral-bg: #718096;
+    }
+}
+
 /* Reset and base styles */
 * {
     margin: 0;
@@ -8,13 +52,13 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f5f5f5;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
 }
 
 /* Header */
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-secondary) 100%);
     color: white;
     padding: 2rem 1rem;
     text-align: center;
@@ -44,16 +88,16 @@ main {
     flex-direction: column;
     gap: 2rem;
     margin-bottom: 3rem;
-    background: white;
+    background: var(--bg-secondary);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
 }
 
 .controls h2 {
     font-size: 1.3rem;
     margin-bottom: 1rem;
-    color: #2d3748;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
@@ -68,9 +112,9 @@ main {
 .position-buttons button,
 .action-buttons button {
     padding: 0.75rem 1.5rem;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: #4a5568;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
@@ -80,70 +124,70 @@ main {
 
 .position-buttons button:hover,
 .action-buttons button:hover {
-    border-color: #667eea;
-    color: #667eea;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
     transform: translateY(-1px);
 }
 
 .position-buttons button.active,
 .action-buttons button.active {
-    background: #667eea;
+    background: var(--accent-color);
     color: white;
-    border-color: #667eea;
+    border-color: var(--accent-color);
 }
 
 .position-buttons button:focus,
 .action-buttons button:focus {
-    outline: 2px solid #667eea;
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
 /* Range information */
 .range-info {
-    background: white;
+    background: var(--bg-secondary);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     margin-bottom: 2rem;
 }
 
 .range-info h2 {
     margin-bottom: 1rem;
-    color: #2d3748;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
 .info-display {
-    background: #f7fafc;
+    background: var(--bg-tertiary);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent-color);
 }
 
 .range-description {
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
 }
 
 .range-percentage,
 .range-count {
-    color: #4a5568;
+    color: var(--text-muted);
     margin-bottom: 0.25rem;
 }
 
 /* Hand grid container */
 .hand-grid-container {
-    background: white;
+    background: var(--bg-secondary);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     margin-bottom: 2rem;
 }
 
 .hand-grid-container h2 {
     margin-bottom: 1.5rem;
-    color: #2d3748;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
@@ -161,30 +205,30 @@ main {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    color: #4a5568;
+    color: var(--text-secondary);
 }
 
 .legend-color {
     width: 20px;
     height: 20px;
     border-radius: 4px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
 }
 
 .legend-color.raise {
-    background: #48bb78;
+    background: var(--raise-bg);
 }
 
 .legend-color.call {
-    background: #ed8936;
+    background: var(--call-bg);
 }
 
 .legend-color.fold {
-    background: #f56565;
+    background: var(--fold-bg);
 }
 
 .legend-color.neutral {
-    background: #a0aec0;
+    background: var(--neutral-bg);
 }
 
 /* Hand grid */
@@ -194,7 +238,7 @@ main {
     gap: 2px;
     max-width: 800px;
     margin: 0 auto;
-    background: #e2e8f0;
+    background: var(--border-color);
     padding: 2px;
     border-radius: 8px;
     position: relative;
@@ -278,13 +322,13 @@ main {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: #f56565;
+    background: var(--error-color);
     color: white;
     padding: 1rem;
     border-radius: 8px;
     z-index: 1000;
     max-width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow);
 }
 
 /* Mobile responsive for grid labels */
@@ -314,45 +358,45 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--bg-secondary);
     border: none;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.8rem;
     transition: all 0.2s ease;
     position: relative;
-    color: #2d3748;
+    color: var(--text-secondary);
 }
 
 .hand-cell:hover {
     transform: scale(1.05);
     z-index: 10;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow);
 }
 
 .hand-cell:focus {
-    outline: 2px solid #667eea;
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
 /* Hand cell colors */
 .hand-cell.raise {
-    background: #48bb78;
+    background: var(--raise-bg);
     color: white;
 }
 
 .hand-cell.call {
-    background: #ed8936;
+    background: var(--call-bg);
     color: white;
 }
 
 .hand-cell.fold {
-    background: #f56565;
+    background: var(--fold-bg);
     color: white;
 }
 
 .hand-cell.neutral {
-    background: #a0aec0;
+    background: var(--neutral-bg);
     color: white;
 }
 
@@ -373,37 +417,37 @@ main {
 
 /* Hand details */
 .hand-details {
-    background: white;
+    background: var(--bg-secondary);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
 }
 
 .hand-details h2 {
     margin-bottom: 1rem;
-    color: #2d3748;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 
 .hand-info {
-    background: #f7fafc;
+    background: var(--bg-tertiary);
     padding: 1.5rem;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent-color);
 }
 
 .hand-info p {
-    color: #4a5568;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
 }
 
 .hand-info .hand-type {
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-secondary);
 }
 
 .hand-info .hand-rank {
-    color: #667eea;
+    color: var(--accent-color);
     font-weight: 500;
 }
 
@@ -421,8 +465,8 @@ main {
 footer {
     text-align: center;
     padding: 2rem 1rem;
-    color: #718096;
-    background: white;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
     margin-top: 3rem;
 }
 
