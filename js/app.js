@@ -1,445 +1,434 @@
+// Poker Range Trainer - Main Application
 class PokerRangeTrainer {
     constructor() {
-        this.currentPosition = 'BTN';
-        this.currentAction = 'open';
+        this.hands = [];
+        this.positions = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
+        this.actions = ['open', 'vs_3bet', 'vs_4bet'];
+        this.currentPosition = null;
+        this.currentAction = null;
+        this.currentRange = null;
         this.selectedHand = null;
-        this.rangeGrid = document.getElementById('rangeGrid');
-        this.handDetails = document.querySelector('.selected-hand');
         
         this.init();
     }
 
     async init() {
-        await window.rangeManager.loadHandRankings();
-        await this.discoverPositionsAndActions();
-        this.setupEventListeners();
-        this.setupURLRouting();
-        this.loadAndDisplayRange();
-    }
-
-    async discoverPositionsAndActions() {
         try {
-            // Discover positions by scanning the ranges directory
-            const positions = await this.discoverPositions();
-            this.generatePositionButtons(positions);
-            
-            // Parse URL for initial position and action
-            const urlParams = this.parseURL();
-            
-            // Set position from URL or default
-            if (urlParams.position && positions.includes(urlParams.position)) {
-                this.currentPosition = urlParams.position;
-            } else {
-                this.currentPosition = positions.includes('BTN') ? 'BTN' : positions[0];
-            }
-            
-            // Discover actions for the selected position
-            const actions = await this.discoverActions(this.currentPosition);
-            this.generateActionButtons(actions);
-            
-            // Set action from URL or default
-            if (urlParams.action && actions.includes(urlParams.action)) {
-                this.currentAction = urlParams.action;
-            } else {
-                this.currentAction = actions.includes('open') ? 'open' : actions[0];
-            }
-            
-            // Update URL to reflect the initial state
-            this.updateURL(this.currentPosition, this.currentAction);
-            
+            await this.loadHands();
+            this.setupEventListeners();
+            await this.loadRangeData();
+            this.renderPositionButtons();
+            this.handleURLNavigation();
         } catch (error) {
-            console.error('Error discovering positions and actions:', error);
-            // Fallback to hardcoded defaults
-            this.currentPosition = 'BTN';
-            this.currentAction = 'open';
+            console.error('Failed to initialize app:', error);
+            this.showError('Failed to load application data');
         }
     }
 
-    async discoverPositions() {
-        // For now, we'll use a simple approach by trying to fetch a list
-        // In a real implementation, you might want to use a server-side endpoint
-        // For GitHub Pages, we'll use a predefined list based on the directory structure
-        const knownPositions = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
-        const availablePositions = [];
-        
-        // Test each position by trying to load a range file
-        for (const position of knownPositions) {
-            try {
-                const response = await fetch(`ranges/${position}/${position}_open.json`);
-                if (response.ok) {
-                    availablePositions.push(position);
-                }
-            } catch (error) {
-                // Position not available
-            }
+    async loadHands() {
+        try {
+            const response = await fetch('data/hands.json');
+            this.hands = await response.json();
+        } catch (error) {
+            console.error('Failed to load hands:', error);
+            throw error;
         }
-        
-        return availablePositions;
     }
 
-    async discoverActions(position) {
-        const knownActions = ['open', 'vs_3bet', 'vs_4bet'];
-        const availableActions = [];
+    async loadRangeData() {
+        this.availableRanges = {};
         
-        // Test each action by trying to load a range file
-        for (const action of knownActions) {
-            try {
-                const response = await fetch(`ranges/${position}/${position}_${action}.json`);
-                if (response.ok) {
-                    availableActions.push(action);
-                }
-            } catch (error) {
-                // Action not available
-            }
-        }
-        
-        return availableActions;
-    }
-
-    generatePositionButtons(positions) {
-        const container = document.getElementById('positionButtons');
-        container.innerHTML = '';
-        
-        positions.forEach((position, index) => {
-            const button = document.createElement('button');
-            button.className = 'position-btn';
-            button.dataset.position = position;
-            button.textContent = position;
+        for (const position of this.positions) {
+            this.availableRanges[position] = {};
             
-            // Make first position active by default
-            if (index === 0) {
-                button.classList.add('active');
+            for (const action of this.actions) {
+                try {
+                    const response = await fetch(`ranges/${position}/${position}_${action}.json`);
+                    if (response.ok) {
+                        const rangeData = await response.json();
+                        this.availableRanges[position][action] = rangeData;
+                    }
+                } catch (error) {
+                    // Range file doesn't exist, skip it
+                    console.log(`No range data for ${position} ${action}`);
+                }
             }
+        }
+    }
+
+    renderPositionButtons() {
+        const positionContainer = document.querySelector('.position-buttons');
+        positionContainer.innerHTML = '';
+        
+        this.positions.forEach(position => {
+            const hasRanges = Object.keys(this.availableRanges[position] || {}).length > 0;
             
-            container.appendChild(button);
+            if (hasRanges) {
+                const button = document.createElement('button');
+                button.textContent = position;
+                button.setAttribute('data-position', position);
+                button.addEventListener('click', () => this.selectPosition(position));
+                
+                positionContainer.appendChild(button);
+            }
         });
     }
 
-    generateActionButtons(actions) {
-        const container = document.getElementById('actionButtons');
-        container.innerHTML = '';
+    selectPosition(position) {
+        this.currentPosition = position;
+        this.currentAction = null;
+        this.currentRange = null;
         
-        actions.forEach((action, index) => {
+        // Update active state
+        document.querySelectorAll('.position-buttons button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-position="${position}"]`).classList.add('active');
+        
+        this.renderActionButtons();
+        this.updateURL();
+    }
+
+    renderActionButtons() {
+        const actionContainer = document.querySelector('.action-buttons');
+        actionContainer.innerHTML = '';
+        
+        const availableActions = Object.keys(this.availableRanges[this.currentPosition] || {});
+        
+        availableActions.forEach(action => {
             const button = document.createElement('button');
-            button.className = 'action-btn';
-            button.dataset.action = action;
             button.textContent = this.formatActionName(action);
+            button.setAttribute('data-action', action);
+            button.addEventListener('click', () => this.selectAction(action));
             
-            // Make first action active by default
-            if (index === 0) {
-                button.classList.add('active');
-            }
-            
-            container.appendChild(button);
+            actionContainer.appendChild(button);
         });
+        
+        // Auto-select first available action
+        if (availableActions.length > 0) {
+            this.selectAction(availableActions[0]);
+        }
     }
 
     formatActionName(action) {
-        const actionNames = {
+        const actionMap = {
             'open': 'Open',
             'vs_3bet': 'vs 3-bet',
             'vs_4bet': 'vs 4-bet'
         };
-        return actionNames[action] || action;
+        return actionMap[action] || action;
+    }
+
+    selectAction(action) {
+        this.currentAction = action;
+        this.currentRange = this.availableRanges[this.currentPosition][action];
+        
+        // Update active state
+        document.querySelectorAll('.action-buttons button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-action="${action}"]`).classList.add('active');
+        
+        this.renderHandGrid();
+        this.updateRangeInfo();
+        this.updateURL();
+    }
+
+    renderHandGrid() {
+        const gridContainer = document.querySelector('.hand-grid');
+        gridContainer.innerHTML = '';
+        
+        // Create 13x13 grid
+        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+        
+        // Add rank labels
+        const rankLabels = document.createElement('div');
+        rankLabels.className = 'rank-labels';
+        rankLabels.style.cssText = `
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 2px;
+            pointer-events: none;
+        `;
+        
+        ranks.forEach(rank => {
+            const label = document.createElement('div');
+            label.textContent = rank;
+            label.style.cssText = `
+                text-align: center;
+                font-weight: bold;
+                color: #4a5568;
+                font-size: 0.8rem;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            rankLabels.appendChild(label);
+        });
+        
+        gridContainer.appendChild(rankLabels);
+        
+        // Add column labels
+        const colLabels = document.createElement('div');
+        colLabels.className = 'col-labels';
+        colLabels.style.cssText = `
+            position: absolute;
+            left: -25px;
+            top: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-rows: repeat(13, 1fr);
+            gap: 2px;
+            pointer-events: none;
+        `;
+        
+        ranks.forEach(rank => {
+            const label = document.createElement('div');
+            label.textContent = rank;
+            label.style.cssText = `
+                text-align: center;
+                font-weight: bold;
+                color: #4a5568;
+                font-size: 0.8rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                writing-mode: vertical-rl;
+                text-orientation: mixed;
+            `;
+            colLabels.appendChild(label);
+        });
+        
+        gridContainer.appendChild(colLabels);
+        
+        // Create hand cells in a 13x13 grid
+        ranks.forEach((rowRank, rowIndex) => {
+            ranks.forEach((colRank, colIndex) => {
+                const cell = document.createElement('button');
+                cell.className = 'hand-cell';
+                
+                // Determine hand name based on poker grid convention
+                let handName;
+                if (rowIndex === colIndex) {
+                    // Pair (diagonal)
+                    handName = rowRank + rowRank;
+                } else if (rowIndex < colIndex) {
+                    // Suited (upper triangle)
+                    handName = rowRank + colRank + 's';
+                } else {
+                    // Offsuit (lower triangle)
+                    handName = colRank + rowRank + 'o';
+                }
+                
+                cell.textContent = handName;
+                cell.setAttribute('data-hand', handName);
+                cell.setAttribute('aria-label', `Hand: ${handName}`);
+                
+                // Set action class based on range
+                if (this.currentRange) {
+                    const action = this.getHandAction(handName);
+                    cell.classList.add(action);
+                } else {
+                    cell.classList.add('neutral');
+                }
+                
+                cell.addEventListener('click', () => this.selectHand(handName));
+                cell.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.selectHand(handName);
+                    }
+                });
+                
+                gridContainer.appendChild(cell);
+            });
+        });
+    }
+
+    getHandAction(handName) {
+        if (!this.currentRange) return 'neutral';
+        
+        const handIndex = this.hands.findIndex(hand => hand.name === handName);
+        if (handIndex === -1) return 'neutral';
+        
+        const totalHands = this.hands.length;
+        const raisePercentage = this.currentRange.raise || 0;
+        const callPercentage = this.currentRange.call || 0;
+        
+        const raiseCount = Math.floor((raisePercentage / 100) * totalHands);
+        const callCount = Math.floor((callPercentage / 100) * totalHands);
+        
+        if (handIndex < raiseCount) {
+            return 'raise';
+        } else if (handIndex < raiseCount + callCount) {
+            return 'call';
+        } else {
+            return 'fold';
+        }
+    }
+
+    selectHand(handName) {
+        this.selectedHand = handName;
+        this.updateHandDetails();
+        
+        // Update visual selection
+        document.querySelectorAll('.hand-cell').forEach(cell => {
+            cell.style.border = 'none';
+        });
+        
+        const selectedCell = document.querySelector(`[data-hand="${handName}"]`);
+        if (selectedCell) {
+            selectedCell.style.border = '3px solid #667eea';
+        }
+    }
+
+    updateHandDetails() {
+        const handInfo = document.querySelector('.hand-info');
+        const hand = this.hands.find(h => h.name === this.selectedHand);
+        
+        if (hand) {
+            const handType = this.getHandType(this.selectedHand);
+            const rank = hand.rank + 1;
+            
+            handInfo.innerHTML = `
+                <p class="hand-type">${this.selectedHand} - ${handType}</p>
+                <p class="hand-rank">Rank: ${rank}/169</p>
+                <p>Strength: ${this.getStrengthDescription(rank)}</p>
+            `;
+        } else {
+            handInfo.innerHTML = '<p>Hand information not available</p>';
+        }
+    }
+
+    getHandType(handName) {
+        if (handName.length === 2) {
+            return 'Pair';
+        } else if (handName.endsWith('s')) {
+            return 'Suited';
+        } else {
+            return 'Offsuit';
+        }
+    }
+
+    getStrengthDescription(rank) {
+        if (rank <= 10) return 'Very Strong';
+        if (rank <= 30) return 'Strong';
+        if (rank <= 60) return 'Medium';
+        if (rank <= 100) return 'Weak';
+        return 'Very Weak';
+    }
+
+    updateRangeInfo() {
+        const descriptionEl = document.querySelector('.range-description');
+        const percentageEl = document.querySelector('.range-percentage');
+        const countEl = document.querySelector('.range-count');
+        
+        if (this.currentRange) {
+            descriptionEl.textContent = this.currentRange.description;
+            
+            let percentageText = `Raise: ${this.currentRange.raise}%`;
+            if (this.currentRange.call) {
+                percentageText += ` | Call: ${this.currentRange.call}%`;
+            }
+            percentageEl.textContent = percentageText;
+            
+            const totalHands = this.hands.length;
+            const raiseCount = Math.floor((this.currentRange.raise / 100) * totalHands);
+            const callCount = this.currentRange.call ? Math.floor((this.currentRange.call / 100) * totalHands) : 0;
+            
+            countEl.textContent = `Hands: ${raiseCount} raise, ${callCount} call, ${totalHands - raiseCount - callCount} fold`;
+        } else {
+            descriptionEl.textContent = 'No range data available for this position and action';
+            percentageEl.textContent = '';
+            countEl.textContent = '';
+        }
+    }
+
+    updateURL() {
+        if (this.currentPosition && this.currentAction) {
+            const url = new URL(window.location);
+            url.searchParams.set('position', this.currentPosition);
+            url.searchParams.set('action', this.currentAction);
+            window.history.pushState({}, '', url);
+        }
+    }
+
+    handleURLNavigation() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const position = urlParams.get('position');
+        const action = urlParams.get('action');
+        
+        if (position && this.availableRanges[position]) {
+            this.selectPosition(position);
+            
+            if (action && this.availableRanges[position][action]) {
+                this.selectAction(action);
+            }
+        } else {
+            // No URL parameters, select default position (preferably BTN)
+            const btnPosition = this.positions.find(pos => this.availableRanges[pos]);
+            const firstPosition = this.positions.find(pos => this.availableRanges[pos]);
+            const defaultPosition = btnPosition || firstPosition;
+            
+            if (defaultPosition) {
+                this.selectPosition(defaultPosition);
+            }
+        }
     }
 
     setupEventListeners() {
-        // Use event delegation for dynamically generated buttons
-        document.getElementById('positionButtons').addEventListener('click', (e) => {
-            if (e.target.classList.contains('position-btn')) {
-                this.navigateToPosition(e.target.dataset.position);
-            }
-        });
-
-        document.getElementById('actionButtons').addEventListener('click', (e) => {
-            if (e.target.classList.contains('action-btn')) {
-                this.navigateToAction(e.target.dataset.action);
-            }
-        });
-    }
-
-    setupURLRouting() {
         // Handle browser back/forward buttons
-        window.addEventListener('popstate', (e) => {
-            this.handleURLChange();
+        window.addEventListener('popstate', () => {
+            this.handleURLNavigation();
         });
-
-        // Initial URL handling
-        this.handleURLChange();
-    }
-
-    handleURLChange() {
-        const urlParams = this.parseURL();
-        const position = urlParams.position || this.currentPosition;
-        const action = urlParams.action || this.currentAction;
-
-        // Only update if something changed
-        if (position !== this.currentPosition || action !== this.currentAction) {
-            this.updateFromURL(position, action);
-        }
-    }
-
-    parseURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return {
-            position: urlParams.get('position'),
-            action: urlParams.get('action')
-        };
-    }
-
-    updateFromURL(position, action) {
-        this.currentPosition = position;
-        this.currentAction = action;
-
-        // Update UI to match URL
-        this.updatePositionUI(position);
-        this.updateActionUI(action);
         
-        // Load and display the range
-        this.loadAndDisplayRange();
-    }
-
-    async updatePositionUI(position) {
-        // Update position button
-        document.querySelectorAll('.position-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const positionBtn = document.querySelector(`[data-position="${position}"]`);
-        if (positionBtn) {
-            positionBtn.classList.add('active');
-        }
-
-        // Update actions for the new position
-        await this.updateActionsForPosition();
-    }
-
-    updateActionUI(action) {
-        // Update action button
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const actionBtn = document.querySelector(`[data-action="${action}"]`);
-        if (actionBtn) {
-            actionBtn.classList.add('active');
-        }
-    }
-
-    navigateToPosition(position) {
-        this.updateURL(position, this.currentAction);
-    }
-
-    navigateToAction(action) {
-        this.updateURL(this.currentPosition, action);
-    }
-
-    updateURL(position, action) {
-        const url = new URL(window.location);
-        url.searchParams.set('position', position);
-        url.searchParams.set('action', action);
-        
-        // Update browser history without reloading
-        window.history.pushState({}, '', url);
-        
-        // Update the app state
-        this.updateFromURL(position, action);
-    }
-
-    async updateActionsForPosition() {
-        const actions = await this.discoverActions(this.currentPosition);
-        this.generateActionButtons(actions);
-        
-        // Try to maintain the current action if it's available for the new position
-        // Otherwise, use the first available action
-        if (!actions.includes(this.currentAction)) {
-            this.currentAction = actions.includes('open') ? 'open' : actions[0];
-            // Update URL to reflect the new action
-            this.updateURL(this.currentPosition, this.currentAction);
-        }
-        
-        // Update the action UI
-        this.updateActionUI(this.currentAction);
-    }
-
-
-
-    async loadAndDisplayRange() {
-        const range = await window.rangeManager.loadRange(this.currentPosition, this.currentAction);
-        if (range) {
-            this.updateRangeInfo(range);
-            this.displayRangeGrid(range);
-        } else {
-            // Show neutral grid when range file is missing
-            this.updateRangeInfoForMissing();
-            this.displayNeutralGrid();
-        }
-    }
-
-    updateRangeInfo(range) {
-        const percentageEl = document.querySelector('.percentage');
-        const handCountEl = document.querySelector('.hand-count');
-        const descriptionEl = document.querySelector('.range-description');
-
-        if (range.call) {
-            // Range has both raise and call percentages
-            const ranges = window.rangeManager.calculateCallRangeHands(range.raise, range.call);
-            const totalHands = ranges.raise.length + ranges.call.length;
-            
-            percentageEl.textContent = `${range.raise}% raise, ${range.call}% call`;
-            handCountEl.textContent = `(${totalHands} hands)`;
-            descriptionEl.textContent = range.description;
-        } else {
-            // Range has only raise percentage
-            const handsInRange = window.rangeManager.calculateRangeHands(range.raise);
-            
-            percentageEl.textContent = `${range.raise}%`;
-            handCountEl.textContent = `(${handsInRange.length} hands)`;
-            descriptionEl.textContent = range.description;
-        }
-    }
-
-    updateRangeInfoForMissing() {
-        const percentageEl = document.querySelector('.percentage');
-        const handCountEl = document.querySelector('.hand-count');
-        const descriptionEl = document.querySelector('.range-description');
-        
-        percentageEl.textContent = 'No range';
-        handCountEl.textContent = '(0 hands)';
-        descriptionEl.textContent = `${this.currentPosition} ${this.currentAction} range not found`;
-    }
-
-    displayRangeGrid(range) {
-        this.rangeGrid.innerHTML = '';
-        
-        let handsInRange, callHands;
-        
-        if (range.call) {
-            // Range has both raise and call percentages
-            const ranges = window.rangeManager.calculateCallRangeHands(range.raise, range.call);
-            handsInRange = ranges.raise;
-            callHands = ranges.call;
-        } else {
-            // Range has only raise percentage
-            handsInRange = window.rangeManager.calculateRangeHands(range.raise);
-            callHands = [];
-        }
-        
-        const allHands = this.generateAllHands();
-        
-        allHands.forEach(hand => {
-            const cell = document.createElement('div');
-            cell.className = 'hand-cell';
-            cell.textContent = hand;
-            cell.dataset.hand = hand;
-            
-            // Add hand type class
-            const handType = window.rangeManager.getHandType(hand);
-            cell.classList.add(handType);
-            
-            // Add action class based on whether hand is in range
-            if (window.rangeManager.isHandInRange(hand, handsInRange)) {
-                cell.classList.add('raise');
-            } else if (window.rangeManager.isHandInRange(hand, callHands)) {
-                cell.classList.add('call');
-            } else {
-                cell.classList.add('fold');
+        // Handle keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.clearHandSelection();
             }
-            
-            // Add click handler
-            cell.addEventListener('click', () => {
-                this.selectHand(hand);
-            });
-            
-            this.rangeGrid.appendChild(cell);
         });
     }
 
-    displayNeutralGrid() {
-        this.rangeGrid.innerHTML = '';
-        
-        const allHands = this.generateAllHands();
-        
-        allHands.forEach(hand => {
-            const cell = document.createElement('div');
-            cell.className = 'hand-cell neutral';
-            cell.textContent = hand;
-            cell.dataset.hand = hand;
-            
-            // Add hand type class
-            const handType = window.rangeManager.getHandType(hand);
-            cell.classList.add(handType);
-            
-            // Add click handler
-            cell.addEventListener('click', () => {
-                this.selectHand(hand);
-            });
-            
-            this.rangeGrid.appendChild(cell);
-        });
-    }
-
-    generateAllHands() {
-        // Generate hands in the exact order for 13x13 grid
-        const hands = [];
-        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
-        
-        for (let i = 0; i < ranks.length; i++) {
-            for (let j = 0; j < ranks.length; j++) {
-                if (i === j) {
-                    // Pairs on diagonal
-                    hands.push(ranks[i] + ranks[j]);
-                } else if (i < j) {
-                    // Suited hands in upper triangle
-                    hands.push(ranks[i] + ranks[j] + 's');
-                } else {
-                    // Offsuit hands in lower triangle
-                    hands.push(ranks[j] + ranks[i] + 'o');
-                }
-            }
-        }
-        
-        return hands;
-    }
-
-    selectHand(hand) {
-        // Remove previous selection
-        document.querySelectorAll('.hand-cell.selected').forEach(cell => {
-            cell.classList.remove('selected');
+    clearHandSelection() {
+        this.selectedHand = null;
+        document.querySelectorAll('.hand-cell').forEach(cell => {
+            cell.style.border = 'none';
         });
         
-        // Add selection to clicked hand
-        const cell = document.querySelector(`[data-hand="${hand}"]`);
-        if (cell) {
-            cell.classList.add('selected');
-        }
-        
-        // Update hand details
-        this.selectedHand = hand;
-        this.updateHandDetails(hand);
+        const handInfo = document.querySelector('.hand-info');
+        handInfo.innerHTML = '<p>Click on any hand to see detailed information</p>';
     }
 
-    updateHandDetails(hand) {
-        const handType = window.rangeManager.getHandType(hand);
-        let details = '';
+    showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f56565;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 1000;
+            max-width: 300px;
+        `;
+        errorDiv.textContent = message;
         
-        if (handType === 'pair') {
-            details = `${hand[0]}${hand[1]} - Pair`;
-        } else if (handType === 'suited') {
-            details = `${hand[0]}${hand[1]}s - ${hand[0]}${hand[1]} suited`;
-        } else {
-            details = `${hand[0]}${hand[1]}o - ${hand[0]}${hand[1]} offsuit`;
-        }
+        document.body.appendChild(errorDiv);
         
-        // Add rank information
-        const handData = window.rangeManager.handRankings.find(h => h.name === hand);
-        if (handData) {
-            details += ` (Rank: ${handData.rank + 1}/${window.rangeManager.handRankings.length})`;
-        }
-        
-        this.handDetails.textContent = details;
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
     }
 }
 
-// Initialize the app when DOM is loaded
+// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new PokerRangeTrainer();
-});
+}); 
