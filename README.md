@@ -2,6 +2,8 @@
 
 A web application that helps poker players learn, practice, and visualize hand ranges for different positions and situations.
 
+https://adriendesola.github.io/poker-ranges
+
 ## Features
 
 - **13x13 Hand Grid**: View all 169 possible poker hands in a visual grid
