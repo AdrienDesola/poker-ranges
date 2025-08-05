@@ -2,8 +2,8 @@
 class PokerRangeTrainer {
     constructor() {
         this.hands = [];
-        this.positions = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
-        this.actions = ['open', 'vs_3bet', 'vs_4bet'];
+        this.positions = ['UTG', 'UTG+1', 'UTG+2', 'HJ', 'LJ', 'CO', 'BTN', 'SB', 'BB'];
+        this.actions = ['open', 'vs_3bet', 'vs_limp'];
         this.currentPosition = null;
         this.currentAction = null;
         this.currentRange = null;
@@ -114,7 +114,7 @@ class PokerRangeTrainer {
         const actionMap = {
             'open': 'Open',
             'vs_3bet': 'vs 3-bet',
-            'vs_4bet': 'vs 4-bet'
+            'vs_limp': 'vs Limp'
         };
         return actionMap[action] || action;
     }
