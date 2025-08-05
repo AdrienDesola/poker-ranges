@@ -31,8 +31,8 @@ class RangeManager {
     calculateRangeHands(percentage) {
         if (!this.handRankings.length) return [];
         
-        // Filter hands by rank (0-100 scale)
-        const maxRank = Math.round((percentage / 100) * 100);
+        // Filter hands by rank (0-169 scale)
+        const maxRank = Math.round((percentage / 100) * 169);
         const handsInRange = this.handRankings
             .filter(hand => hand.rank <= maxRank)
             .map(hand => hand.name);
