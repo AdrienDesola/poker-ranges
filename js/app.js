@@ -66,11 +66,22 @@ class PokerRangeTrainer {
         const handCountEl = document.querySelector('.hand-count');
         const descriptionEl = document.querySelector('.range-description');
 
-        const handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
-        
-        percentageEl.textContent = `${range.percentage}%`;
-        handCountEl.textContent = `(${handsInRange.length} hands)`;
-        descriptionEl.textContent = range.description;
+        if (range.callPercentage) {
+            // Range has both raise and call percentages
+            const ranges = window.rangeManager.calculateCallRangeHands(range.percentage, range.callPercentage);
+            const totalHands = ranges.raise.length + ranges.call.length;
+            
+            percentageEl.textContent = `${range.percentage}% raise, ${range.callPercentage}% call`;
+            handCountEl.textContent = `(${totalHands} hands)`;
+            descriptionEl.textContent = range.description;
+        } else {
+            // Range has only raise percentage
+            const handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
+            
+            percentageEl.textContent = `${range.percentage}%`;
+            handCountEl.textContent = `(${handsInRange.length} hands)`;
+            descriptionEl.textContent = range.description;
+        }
     }
 
     updateRangeInfoForMissing() {
@@ -86,7 +97,19 @@ class PokerRangeTrainer {
     displayRangeGrid(range) {
         this.rangeGrid.innerHTML = '';
         
-        const handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
+        let handsInRange, callHands;
+        
+        if (range.callPercentage) {
+            // Range has both raise and call percentages
+            const ranges = window.rangeManager.calculateCallRangeHands(range.percentage, range.callPercentage);
+            handsInRange = ranges.raise;
+            callHands = ranges.call;
+        } else {
+            // Range has only raise percentage
+            handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
+            callHands = [];
+        }
+        
         const allHands = this.generateAllHands();
         
         allHands.forEach(hand => {
@@ -101,7 +124,9 @@ class PokerRangeTrainer {
             
             // Add action class based on whether hand is in range
             if (window.rangeManager.isHandInRange(hand, handsInRange)) {
-                cell.classList.add('raise'); // or 'call' depending on action
+                cell.classList.add('raise');
+            } else if (window.rangeManager.isHandInRange(hand, callHands)) {
+                cell.classList.add('call');
             } else {
                 cell.classList.add('fold');
             }

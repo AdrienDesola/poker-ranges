@@ -40,6 +40,24 @@ class RangeManager {
         return handsInRange;
     }
 
+    calculateCallRangeHands(raisePercentage, callPercentage) {
+        if (!this.handRankings.length) return [];
+        
+        // Calculate raise range
+        const raiseMaxRank = Math.round((raisePercentage / 100) * 169);
+        const raiseHands = this.handRankings
+            .filter(hand => hand.rank <= raiseMaxRank)
+            .map(hand => hand.name);
+        
+        // Calculate call range (hands between raise and call percentages)
+        const callMaxRank = Math.round((callPercentage / 100) * 169);
+        const callHands = this.handRankings
+            .filter(hand => hand.rank > raiseMaxRank && hand.rank <= callMaxRank)
+            .map(hand => hand.name);
+        
+        return { raise: raiseHands, call: callHands };
+    }
+
     getHandType(handName) {
         if (handName[0] === handName[1]) return 'pair';
         if (handName.endsWith('s')) return 'suited';
