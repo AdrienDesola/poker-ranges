@@ -11,28 +11,152 @@ class PokerRangeTrainer {
 
     async init() {
         await window.rangeManager.loadHandRankings();
+        await this.discoverPositionsAndActions();
         this.setupEventListeners();
         this.loadAndDisplayRange();
     }
 
+    async discoverPositionsAndActions() {
+        try {
+            // Discover positions by scanning the ranges directory
+            const positions = await this.discoverPositions();
+            this.generatePositionButtons(positions);
+            
+            // Set default position (first one or BTN if available)
+            this.currentPosition = positions.includes('BTN') ? 'BTN' : positions[0];
+            this.setActivePosition(document.querySelector(`[data-position="${this.currentPosition}"]`));
+            
+            // Discover actions for the selected position
+            const actions = await this.discoverActions(this.currentPosition);
+            this.generateActionButtons(actions);
+            
+            // Set default action (first one or 'open' if available)
+            this.currentAction = actions.includes('open') ? 'open' : actions[0];
+            this.setActiveAction(document.querySelector(`[data-action="${this.currentAction}"]`));
+            
+        } catch (error) {
+            console.error('Error discovering positions and actions:', error);
+            // Fallback to hardcoded defaults
+            this.currentPosition = 'BTN';
+            this.currentAction = 'open';
+        }
+    }
+
+    async discoverPositions() {
+        // For now, we'll use a simple approach by trying to fetch a list
+        // In a real implementation, you might want to use a server-side endpoint
+        // For GitHub Pages, we'll use a predefined list based on the directory structure
+        const knownPositions = ['UTG', 'MP', 'CO', 'BTN', 'SB', 'BB'];
+        const availablePositions = [];
+        
+        // Test each position by trying to load a range file
+        for (const position of knownPositions) {
+            try {
+                const response = await fetch(`ranges/${position}/${position}_open.json`);
+                if (response.ok) {
+                    availablePositions.push(position);
+                }
+            } catch (error) {
+                // Position not available
+            }
+        }
+        
+        return availablePositions;
+    }
+
+    async discoverActions(position) {
+        const knownActions = ['open', 'vs_3bet', 'vs_4bet'];
+        const availableActions = [];
+        
+        // Test each action by trying to load a range file
+        for (const action of knownActions) {
+            try {
+                const response = await fetch(`ranges/${position}/${position}_${action}.json`);
+                if (response.ok) {
+                    availableActions.push(action);
+                }
+            } catch (error) {
+                // Action not available
+            }
+        }
+        
+        return availableActions;
+    }
+
+    generatePositionButtons(positions) {
+        const container = document.getElementById('positionButtons');
+        container.innerHTML = '';
+        
+        positions.forEach((position, index) => {
+            const button = document.createElement('button');
+            button.className = 'position-btn';
+            button.dataset.position = position;
+            button.textContent = position;
+            
+            // Make first position active by default
+            if (index === 0) {
+                button.classList.add('active');
+            }
+            
+            container.appendChild(button);
+        });
+    }
+
+    generateActionButtons(actions) {
+        const container = document.getElementById('actionButtons');
+        container.innerHTML = '';
+        
+        actions.forEach((action, index) => {
+            const button = document.createElement('button');
+            button.className = 'action-btn';
+            button.dataset.action = action;
+            button.textContent = this.formatActionName(action);
+            
+            // Make first action active by default
+            if (index === 0) {
+                button.classList.add('active');
+            }
+            
+            container.appendChild(button);
+        });
+    }
+
+    formatActionName(action) {
+        const actionNames = {
+            'open': 'Open',
+            'vs_3bet': 'vs 3-bet',
+            'vs_4bet': 'vs 4-bet'
+        };
+        return actionNames[action] || action;
+    }
+
     setupEventListeners() {
-        // Position buttons
-        document.querySelectorAll('.position-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Use event delegation for dynamically generated buttons
+        document.getElementById('positionButtons').addEventListener('click', (e) => {
+            if (e.target.classList.contains('position-btn')) {
                 this.setActivePosition(e.target);
                 this.currentPosition = e.target.dataset.position;
+                this.updateActionsForPosition();
                 this.loadAndDisplayRange();
-            });
+            }
         });
 
-        // Action buttons
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        document.getElementById('actionButtons').addEventListener('click', (e) => {
+            if (e.target.classList.contains('action-btn')) {
                 this.setActiveAction(e.target);
                 this.currentAction = e.target.dataset.action;
                 this.loadAndDisplayRange();
-            });
+            }
         });
+    }
+
+    async updateActionsForPosition() {
+        const actions = await this.discoverActions(this.currentPosition);
+        this.generateActionButtons(actions);
+        
+        // Set default action for the new position
+        this.currentAction = actions.includes('open') ? 'open' : actions[0];
+        this.setActiveAction(document.querySelector(`[data-action="${this.currentAction}"]`));
     }
 
     setActivePosition(activeBtn) {
