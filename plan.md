@@ -1,184 +1,191 @@
-# Poker Range Trainer - Project Plan
+# Poker Range Trainer - Features Overview
 
-## Overview
-A web-based poker range trainer that helps players practice and memorize hand ranges for different positions and situations. The application will be minimal, fast, and deployable on GitHub Pages.
+## What is the Poker Range Trainer?
 
-## Core Features (Phase 1 - Range Presentation)
-1. **Range Visualization** - Display hand ranges in a grid format (similar to PokerStars)
-2. **Position Selection** - Choose from different positions (UTG, MP, CO, BTN, SB, BB)
-3. **Action Selection** - Different actions (fold, call, raise, 3-bet, etc.)
-4. **Easy Range Management** - Simple JSON files organized by position for easy addition of new ranges
+The Poker Range Trainer is a web application that helps poker players learn, practice, and visualize hand ranges for different positions and situations. It displays poker hands in a familiar 13x13 grid format, similar to what you'd see in poker software, with color-coded hands based on the recommended action.
+
+## Core Features
+
+### Range Visualization
+- **13x13 Hand Grid**: View all 169 possible poker hands in a visual grid
+- **Color-Coded Actions**: Hands are colored based on recommended action:
+  - **Green**: Raise hands (strong hands to bet with)
+  - **Orange**: Call hands (medium hands to call with)
+  - **Red**: Fold hands (weak hands to fold)
+  - **Gray**: Neutral (when no range is available)
+- **Interactive Selection**: Click any hand to see detailed information including hand strength rank
+
+### Position-Based Ranges
+- **Multiple Positions**: Support for all standard poker positions:
+  - **UTG** (Under the Gun) - First to act
+  - **MP** (Middle Position) - Second to act
+  - **CO** (Cutoff) - Third to act
+  - **BTN** (Button) - Fourth to act
+  - **SB** (Small Blind) - Fifth to act
+  - **BB** (Big Blind) - Last to act
+- **Dynamic Discovery**: Only shows positions that have available range data
+- **Smart Defaults**: Automatically selects Button position when available
+
+### Action-Based Scenarios
+- **Opening Ranges**: What hands to raise when first to act
+- **vs 3-bet Ranges**: How to respond when someone re-raises
+- **vs 4-bet Ranges**: How to respond to aggressive re-raising
+- **Dynamic Actions**: Action buttons update based on available data for each position
+
+### Range Information Display
+- **Percentage Display**: Shows the percentage of hands in the range
+- **Hand Count**: Displays the exact number of hands included
+- **Range Description**: Human-readable description of the scenario
+- **Dual Percentage Support**: Shows both raise and call percentages when applicable
+
+### Hand Details Panel
+- **Hand Type**: Identifies if the hand is a pair, suited, or offsuit
+- **Strength Ranking**: Shows the hand's position in the 169-hand strength hierarchy
+- **Detailed Information**: Format like "AA - Pair (Rank: 1/169)" for the strongest hand
+
+### URL-Based Navigation
+- **Direct Links**: Share specific position/action combinations via URL
+- **Bookmarkable**: Save favorite ranges as browser bookmarks
+- **Browser History**: Back and forward buttons work correctly
+- **Deep Linking**: Link directly to any position/action combination
+
+### Responsive Design
+- **Mobile Friendly**: Works on phones and tablets
+- **Desktop Optimized**: Full-featured experience on larger screens
+- **Touch Support**: Easy to use on touch devices
+- **Flexible Layout**: Adapts to different screen sizes
+
+## User Experience Features
+
+### Easy Navigation
+- **One-Click Position Changes**: Switch between positions instantly
+- **Dynamic Action Updates**: Action options change based on selected position
+- **Visual Feedback**: Active selections are clearly highlighted
+- **Smooth Transitions**: Smooth animations when switching ranges
+
+### Intuitive Interface
+- **Familiar Grid Layout**: Standard poker hand grid format
+- **Clear Color Coding**: Intuitive color system for actions
+- **Hover Effects**: Visual feedback when hovering over hands
+- **Click to Select**: Easy hand selection for detailed information
+
+### Error Handling
+- **Graceful Degradation**: Shows neutral grid when range data is missing
+- **Helpful Messages**: Clear information about missing ranges
+- **Fallback Options**: Maintains functionality even with missing data
+- **URL Validation**: Handles invalid URLs gracefully
+
+## Data Management
+
+### Range Data Structure
+- **Percentage-Based**: Ranges defined by percentage of hands (0-100%)
+- **Raise Percentage**: Percentage of strongest hands to raise with
+- **Call Percentage**: Optional percentage of hands to call with
+- **Automatic Calculation**: App calculates which specific hands are included
+
+### Hand Ranking System
+- **169-Hand Scale**: All possible poker hands ranked from strongest to weakest
+- **Standard Rankings**: Based on accepted poker hand strength
+- **Consistent Ordering**: Same ranking used across all ranges
+- **Visual Representation**: Grid shows hands in standard poker order
+
+### File Organization
+- **Position-Based Folders**: Organized by poker position
+- **Action-Based Files**: Files named by position and action
+- **Easy to Add**: Simple JSON format for adding new ranges
+- **Automatic Discovery**: App finds available ranges automatically
+
+## Learning Features
+
+### Range Practice
+- **Visual Learning**: See exactly which hands to play in each situation
+- **Position Understanding**: Learn how ranges change by position
+- **Action Scenarios**: Understand different betting situations
+- **Hand Strength**: Learn relative hand strength through ranking
+
+### Reference Tool
+- **Quick Lookup**: Find specific ranges for any position/action
+- **Comparison Tool**: Easily compare ranges between positions
+- **Study Aid**: Use for memorizing standard ranges
+- **Training Tool**: Practice recognizing hand ranges
+
+## Accessibility Features
+
+### Keyboard Navigation
+- **Tab Navigation**: Navigate through all interactive elements
+- **Enter/Space**: Activate buttons and selections
+- **Arrow Keys**: Navigate through hand grid (future feature)
+
+### Screen Reader Support
+- **Semantic HTML**: Proper heading and button structure
+- **Alt Text**: Descriptive text for all interactive elements
+- **ARIA Labels**: Accessible labels for complex interactions
+- **Focus Indicators**: Clear focus states for keyboard users
 
 ## Future Features (Roadmap)
-5. **Range Practice** - Quiz mode to test knowledge of ranges
-6. **Range Builder** - Custom range creation and editing
-7. **Statistics** - Track progress and accuracy
 
-## Technical Requirements
-- **Static Site** - Must work on GitHub Pages (no server-side code)
-- **Vanilla JavaScript** - No frameworks to keep it minimal
-- **CSS Grid/Flexbox** - For responsive range display
-- **Local Storage** - Save user progress and custom ranges
-- **Mobile Responsive** - Work on phones and tablets
+### Phase 2: Quiz Functionality
+- **Hand Selection Quizzes**: Test knowledge of which hands to play
+- **Position Recognition**: Practice identifying correct ranges by position
+- **Action Scenarios**: Quiz on raise/call/fold decisions
+- **Progress Tracking**: Monitor learning progress over time
 
-## Project Structure
-```
-html-ranges/
-├── index.html              # Main application page
-├── css/
-│   ├── style.css          # Main stylesheet
-│   └── ranges.css         # Range grid specific styles
-├── js/
-│   ├── app.js             # Main application logic
-│   ├── ranges.js          # Range data and logic
-│   └── storage.js         # Local storage utilities
-├── data/
-│   └── hands.json         # All 169 hands in ranking order
-├── ranges/                # Range data organized by position
-│   ├── UTG/
-│   │   ├── UTG_open.json
-│   │   └── UTG_vs_3bet.json
-│   ├── MP/
-│   │   ├── MP_open.json
-│   │   └── MP_vs_3bet.json
-│   ├── CO/
-│   │   ├── CO_open.json
-│   │   └── CO_vs_3bet.json
-│   ├── BTN/
-│   │   ├── BTN_open.json
-│   │   ├── BTN_vs_BB.json
-│   │   └── BTN_vs_3bet.json
-│   ├── SB/
-│   │   ├── SB_open.json
-│   │   ├── SB_vs_BB.json
-│   │   └── SB_vs_3bet.json
-│   └── BB/
-│       ├── BB_vs_UTG.json
-│       ├── BB_vs_MP.json
-│       ├── BB_vs_CO.json
-│       ├── BB_vs_BTN.json
-│       └── BB_vs_SB.json
-├── assets/
-│   └── icons/             # UI icons (if needed)
-├── README.md              # Project documentation
-└── plan.md               # This planning document
-```
+### Phase 3: Custom Range Builder
+- **Personal Ranges**: Create and save custom hand ranges
+- **Range Editing**: Modify existing ranges to match your style
+- **Range Comparison**: Compare custom ranges with standard ranges
+- **Range Export**: Share custom ranges with others
 
-## Range Data Structure
-Each range file (e.g., `ranges/BTN/BTN_open.json`) will contain only the essential information:
-```json
-{
-  "position": "BTN",
-  "action": "open",
-  "description": "Button opening range",
-  "percentage": 25.3
-}
-```
+### Phase 4: Statistics and Progress
+- **Learning Analytics**: Track study time and progress
+- **Performance Metrics**: Measure accuracy in range recognition
+- **Study Reminders**: Set goals and track completion
+- **Achievement System**: Gamify the learning process
 
-## Simplified Range Data Structure
-Each range file will contain just the essential information:
-```json
-{
-  "position": "BTN",
-  "action": "open",
-  "description": "Button opening range",
-  "percentage": 25.3
-}
-```
+### Phase 5: Advanced Features
+- **Range Comparison**: Side-by-side range comparison
+- **Hand Equity**: Show equity calculations for hands
+- **Board Texture**: Consider board cards in range decisions
+- **Multi-Table**: Support for different table sizes and formats
 
-The app will calculate the range automatically based on the percentage. This approach:
-- **Ultra simple** - Just specify the percentage
-- **Automatic calculation** - App determines which hands to include
-- **Easy to add** - Just set the percentage you want
-- **Minimal data** - Each range file is just a few lines
-- **Flexible** - Can easily adjust percentages for different situations
+## Use Cases
 
-## Hand Rankings (data/hands.json)
-The app will use a predefined hand ranking file that contains all 169 possible hands in order from strongest to weakest:
-```json
-[
-  "AA", "AKs", "AKo", "AQs", "AQo", "AJs", "AJo", "ATs", "ATo", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-  "KK", "KQs", "KQo", "KJs", "KJo", "KTs", "KTo", "K9s", "K8s", "K7s", "K6s", "K5s", "K4s", "K3s", "K2s",
-  "QQ", "QJs", "QJo", "QTs", "QTo", "Q9s", "Q8s", "Q7s", "Q6s", "Q5s", "Q4s", "Q3s", "Q2s",
-  "JJ", "JTs", "JTo", "J9s", "J8s", "J7s", "J6s", "J5s", "J4s", "J3s", "J2s",
-  "TT", "T9s", "T8s", "T7s", "T6s", "T5s", "T4s", "T3s", "T2s",
-  "99", "98s", "97s", "96s", "95s", "94s", "93s", "92s",
-  "88", "87s", "86s", "85s", "84s", "83s", "82s",
-  "77", "76s", "75s", "74s", "73s", "72s",
-  "66", "65s", "64s", "63s", "62s",
-  "55", "54s", "53s", "52s",
-  "44", "43s", "42s",
-  "33", "32s",
-  "22"
-]
-```
+### For Beginners
+- **Learn Basic Ranges**: Start with simple opening ranges
+- **Understand Position**: See how position affects hand selection
+- **Visual Learning**: Use color coding to understand hand strength
+- **Practice Recognition**: Click hands to learn their strength
 
-When a range specifies 25.3%, the app will include the top 25.3% of hands from this ranking (approximately the first 43 hands).
+### For Intermediate Players
+- **Refine Ranges**: Study specific position/action combinations
+- **Compare Scenarios**: See how ranges change in different situations
+- **Practice Scenarios**: Use for pre-session range review
+- **Reference Tool**: Quick lookup during study sessions
 
-## Adding New Ranges
-To add a new range, simply create a new JSON file in the appropriate position folder:
-- File naming: `{POSITION}_{ACTION}.json` (e.g., `BTN_open.json`, `BB_vs_BTN.json`)
-- Copy the simplified structure above
-- Set the percentage you want (e.g., 25.3 for 25.3% of hands)
-- The app will automatically calculate and display the range
+### For Advanced Players
+- **Custom Ranges**: Build and save personal range adjustments
+- **Scenario Practice**: Study complex multi-street scenarios
+- **Range Analysis**: Deep dive into specific range components
+- **Teaching Tool**: Use to explain ranges to others
 
-## UI Components (Phase 1)
-1. **Position Selector** - Buttons for position selection (UTG, MP, CO, BTN, SB, BB)
-2. **Action Selector** - Buttons for different actions (open, vs_3bet, vs_4bet, etc.)
-3. **Range Grid** - 13x13 grid showing all possible hands with color coding
-4. **Percentage Display** - Shows current range percentage and hand count
-5. **Range Info Panel** - Shows selected range description and details
-6. **Hand Details** - Shows selected hand details when clicked
+## Benefits
 
-## UI Layout
-```
-┌─────────────────────────────────────────────────────────┐
-│ Position: [UTG] [MP] [CO] [BTN] [SB] [BB]            │
-│ Action:   [open] [vs_3bet] [vs_4bet] [fold]          │
-├─────────────────────────────────────────────────────────┤
-│ Range: 25.3% (43 hands) | Description: Button opening │
-├─────────────────────────────────────────────────────────┤
-│                    Range Grid                          │
-│  A  K  Q  J  T  9  8  7  6  5  4  3  2              │
-│A ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│K ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│Q ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│J ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│T ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│9 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│8 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│7 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│6 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│5 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│4 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│3 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-│2 ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●              │
-├─────────────────────────────────────────────────────────┤
-│ Selected: AKs | Details: Ace-King suited              │
-└─────────────────────────────────────────────────────────┘
-```
+### Learning Efficiency
+- **Visual Learning**: Faster understanding through visual representation
+- **Interactive Practice**: Active engagement improves retention
+- **Immediate Feedback**: Instant validation of range knowledge
+- **Progressive Learning**: Start simple, advance to complex scenarios
 
-## Color Coding
-- **Green** - Hands in the range (raise/call)
-- **Red** - Hands not in the range (fold)
-- **Blue** - Selected hand (when clicked)
-- **Gray** - Unselected hands
+### Practical Application
+- **Real-World Relevance**: Based on actual poker situations
+- **Position Awareness**: Develop position-based thinking
+- **Action Recognition**: Learn to identify correct actions quickly
+- **Range Memorization**: Build muscle memory for common ranges
 
-## Development Phases
-1. **Phase 1** - Basic range display and navigation (Current Focus)
-   - Create range grid visualization
-   - Implement position/action selectors
-   - Load and display ranges from JSON files
-   - Basic hand selection and highlighting
-2. **Phase 2** - Quiz functionality
-3. **Phase 3** - Custom range builder
-4. **Phase 4** - Statistics and progress tracking
-5. **Phase 5** - Polish and optimization
+### Study Flexibility
+- **Anytime Access**: Available 24/7 for practice
+- **Mobile Friendly**: Study on any device
+- **Bookmarkable**: Save specific scenarios for later review
+- **Shareable**: Share specific ranges with study partners
 
-## Next Steps (Phase 1)
-- Set up project structure and create folders
-- Create basic HTML layout with range grid
-- Implement range grid display (13x13 grid)
-- Add position/action selectors
-- Create sample range JSON files
-- Implement range loading and display logic 
+This feature-focused overview describes what the Poker Range Trainer does and how it helps poker players improve their game, without getting into technical implementation details. 
