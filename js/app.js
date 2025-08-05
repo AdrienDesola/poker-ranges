@@ -1,9 +1,16 @@
+// Action mapping for display names
+const ACTION_MAP = {
+    'open': 'Open',
+    'vs_limp': 'vs Limp',
+    'vs_3bet': 'vs 3-bet',
+};
+
 // Poker Range Trainer - Main Application
 class PokerRangeTrainer {
     constructor() {
         this.hands = [];
         this.positions = ['UTG', 'UTG+1', 'UTG+2', 'HJ', 'LJ', 'CO', 'BTN', 'SB', 'BB'];
-        this.actions = ['open', 'vs_3bet', 'vs_limp'];
+        this.actions = Object.keys(ACTION_MAP);
         this.currentPosition = null;
         this.currentAction = null;
         this.currentRange = null;
@@ -111,12 +118,7 @@ class PokerRangeTrainer {
     }
 
     formatActionName(action) {
-        const actionMap = {
-            'open': 'Open',
-            'vs_3bet': 'vs 3-bet',
-            'vs_limp': 'vs Limp'
-        };
-        return actionMap[action] || action;
+        return ACTION_MAP[action] || action;
     }
 
     selectAction(action) {
