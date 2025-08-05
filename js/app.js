@@ -216,6 +216,12 @@ class PokerRangeTrainer {
             details = `${hand[0]}${hand[1]}o - ${hand[0]}${hand[1]} offsuit`;
         }
         
+        // Add rank information
+        const handData = window.rangeManager.handRankings.find(h => h.name === hand);
+        if (handData) {
+            details += ` (Rank: ${handData.rank + 1}/${window.rangeManager.handRankings.length})`;
+        }
+        
         this.handDetails.textContent = details;
     }
 }
