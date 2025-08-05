@@ -144,30 +144,11 @@ class PokerRangeTrainer {
         // Add rank labels
         const rankLabels = document.createElement('div');
         rankLabels.className = 'rank-labels';
-        rankLabels.style.cssText = `
-            position: absolute;
-            top: -25px;
-            left: 0;
-            right: 0;
-            display: grid;
-            grid-template-columns: repeat(13, 1fr);
-            gap: 2px;
-            pointer-events: none;
-        `;
         
         ranks.forEach(rank => {
             const label = document.createElement('div');
             label.textContent = rank;
-            label.style.cssText = `
-                text-align: center;
-                font-weight: bold;
-                color: #4a5568;
-                font-size: 0.8rem;
-                height: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            `;
+            label.className = 'rank-label';
             rankLabels.appendChild(label);
         });
         
@@ -176,31 +157,11 @@ class PokerRangeTrainer {
         // Add column labels
         const colLabels = document.createElement('div');
         colLabels.className = 'col-labels';
-        colLabels.style.cssText = `
-            position: absolute;
-            left: -25px;
-            top: 0;
-            bottom: 0;
-            display: grid;
-            grid-template-rows: repeat(13, 1fr);
-            gap: 2px;
-            pointer-events: none;
-        `;
         
         ranks.forEach(rank => {
             const label = document.createElement('div');
             label.textContent = rank;
-            label.style.cssText = `
-                text-align: center;
-                font-weight: bold;
-                color: #4a5568;
-                font-size: 0.8rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                writing-mode: vertical-rl;
-                text-orientation: mixed;
-            `;
+            label.className = 'col-label';
             colLabels.appendChild(label);
         });
         
@@ -407,17 +368,7 @@ class PokerRangeTrainer {
 
     showError(message) {
         const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #f56565;
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            z-index: 1000;
-            max-width: 300px;
-        `;
+        errorDiv.className = 'error-message';
         errorDiv.textContent = message;
         
         document.body.appendChild(errorDiv);
