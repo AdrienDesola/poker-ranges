@@ -1,0 +1,7 @@
+{
+  "position": "UTG+1",
+  "action": "vs_3bet",
+  "description": "UTG+1 vs 3-bet range",
+  "raise": 2.1,
+  "call": 3.2
+} 

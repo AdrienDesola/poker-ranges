@@ -1,0 +1,7 @@
+{
+  "position": "SB",
+  "action": "vs_limp",
+  "description": "Small Blind vs limp range",
+  "raise": 38.7,
+  "call": 22.1
+} 

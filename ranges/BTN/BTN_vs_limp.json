@@ -1,0 +1,7 @@
+{
+  "position": "BTN",
+  "action": "vs_limp",
+  "description": "Button vs limp range",
+  "raise": 28.5,
+  "call": 12.3
+} 

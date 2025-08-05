@@ -1,0 +1,7 @@
+{
+  "position": "LJ",
+  "action": "vs_3bet",
+  "description": "Lojack vs 3-bet range",
+  "raise": 6.5,
+  "call": 8.2
+} 

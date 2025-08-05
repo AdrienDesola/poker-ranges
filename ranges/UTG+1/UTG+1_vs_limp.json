@@ -1,0 +1,7 @@
+{
+  "position": "UTG+1",
+  "action": "vs_limp",
+  "description": "UTG+1 vs limp range",
+  "raise": 18.7,
+  "call": 10.2
+} 
