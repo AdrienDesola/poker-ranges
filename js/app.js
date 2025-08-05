@@ -50,7 +50,9 @@ class PokerRangeTrainer {
             
             for (const action of this.actions) {
                 try {
-                    const response = await fetch(`ranges/${position}/${position}_${action}.json`);
+                    // Add cache-busting parameter to prevent browser caching
+                    const timestamp = Date.now();
+                    const response = await fetch(`ranges/${position}/${position}_${action}.json?t=${timestamp}`);
                     if (response.ok) {
                         const rangeData = await response.json();
                         this.availableRanges[position][action] = rangeData;

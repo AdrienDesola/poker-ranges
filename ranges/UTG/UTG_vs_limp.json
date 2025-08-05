@@ -2,6 +2,6 @@
   "position": "UTG",
   "action": "vs_limp",
   "description": "UTG vs limp range",
-  "raise": 15.2,
+  "raise": 5.2,
   "call": 8.5
 } 

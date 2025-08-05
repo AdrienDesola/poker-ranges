@@ -2,5 +2,5 @@
   "position": "UTG",
   "action": "open",
   "description": "UTG opening range",
-  "raise": 10.1
-} 
+  "raise": 20
+}
