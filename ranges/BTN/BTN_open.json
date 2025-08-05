@@ -2,6 +2,6 @@
   "position": "BTN",
   "action": "open",
   "description": "Button opening range",
-  "percentage": 25.3,
-  "callPercentage": 35.0
+  "raise": 25.3,
+  "call": 35.0
 } 

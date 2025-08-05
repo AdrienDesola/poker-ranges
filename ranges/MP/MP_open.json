@@ -2,5 +2,5 @@
   "position": "MP",
   "action": "open",
   "description": "MP opening range",
-  "percentage": 14.3
+  "raise": 14.3
 } 

@@ -13,6 +13,7 @@ class PokerRangeTrainer {
         await window.rangeManager.loadHandRankings();
         await this.discoverPositionsAndActions();
         this.setupEventListeners();
+        this.setupURLRouting();
         this.loadAndDisplayRange();
     }
 
@@ -22,17 +23,29 @@ class PokerRangeTrainer {
             const positions = await this.discoverPositions();
             this.generatePositionButtons(positions);
             
-            // Set default position (first one or BTN if available)
-            this.currentPosition = positions.includes('BTN') ? 'BTN' : positions[0];
-            this.setActivePosition(document.querySelector(`[data-position="${this.currentPosition}"]`));
+            // Parse URL for initial position and action
+            const urlParams = this.parseURL();
+            
+            // Set position from URL or default
+            if (urlParams.position && positions.includes(urlParams.position)) {
+                this.currentPosition = urlParams.position;
+            } else {
+                this.currentPosition = positions.includes('BTN') ? 'BTN' : positions[0];
+            }
             
             // Discover actions for the selected position
             const actions = await this.discoverActions(this.currentPosition);
             this.generateActionButtons(actions);
             
-            // Set default action (first one or 'open' if available)
-            this.currentAction = actions.includes('open') ? 'open' : actions[0];
-            this.setActiveAction(document.querySelector(`[data-action="${this.currentAction}"]`));
+            // Set action from URL or default
+            if (urlParams.action && actions.includes(urlParams.action)) {
+                this.currentAction = urlParams.action;
+            } else {
+                this.currentAction = actions.includes('open') ? 'open' : actions[0];
+            }
+            
+            // Update URL to reflect the initial state
+            this.updateURL(this.currentPosition, this.currentAction);
             
         } catch (error) {
             console.error('Error discovering positions and actions:', error);
@@ -134,44 +147,120 @@ class PokerRangeTrainer {
         // Use event delegation for dynamically generated buttons
         document.getElementById('positionButtons').addEventListener('click', (e) => {
             if (e.target.classList.contains('position-btn')) {
-                this.setActivePosition(e.target);
-                this.currentPosition = e.target.dataset.position;
-                this.updateActionsForPosition();
-                this.loadAndDisplayRange();
+                this.navigateToPosition(e.target.dataset.position);
             }
         });
 
         document.getElementById('actionButtons').addEventListener('click', (e) => {
             if (e.target.classList.contains('action-btn')) {
-                this.setActiveAction(e.target);
-                this.currentAction = e.target.dataset.action;
-                this.loadAndDisplayRange();
+                this.navigateToAction(e.target.dataset.action);
             }
         });
+    }
+
+    setupURLRouting() {
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (e) => {
+            this.handleURLChange();
+        });
+
+        // Initial URL handling
+        this.handleURLChange();
+    }
+
+    handleURLChange() {
+        const urlParams = this.parseURL();
+        const position = urlParams.position || this.currentPosition;
+        const action = urlParams.action || this.currentAction;
+
+        // Only update if something changed
+        if (position !== this.currentPosition || action !== this.currentAction) {
+            this.updateFromURL(position, action);
+        }
+    }
+
+    parseURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            position: urlParams.get('position'),
+            action: urlParams.get('action')
+        };
+    }
+
+    updateFromURL(position, action) {
+        this.currentPosition = position;
+        this.currentAction = action;
+
+        // Update UI to match URL
+        this.updatePositionUI(position);
+        this.updateActionUI(action);
+        
+        // Load and display the range
+        this.loadAndDisplayRange();
+    }
+
+    async updatePositionUI(position) {
+        // Update position button
+        document.querySelectorAll('.position-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const positionBtn = document.querySelector(`[data-position="${position}"]`);
+        if (positionBtn) {
+            positionBtn.classList.add('active');
+        }
+
+        // Update actions for the new position
+        await this.updateActionsForPosition();
+    }
+
+    updateActionUI(action) {
+        // Update action button
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const actionBtn = document.querySelector(`[data-action="${action}"]`);
+        if (actionBtn) {
+            actionBtn.classList.add('active');
+        }
+    }
+
+    navigateToPosition(position) {
+        this.updateURL(position, this.currentAction);
+    }
+
+    navigateToAction(action) {
+        this.updateURL(this.currentPosition, action);
+    }
+
+    updateURL(position, action) {
+        const url = new URL(window.location);
+        url.searchParams.set('position', position);
+        url.searchParams.set('action', action);
+        
+        // Update browser history without reloading
+        window.history.pushState({}, '', url);
+        
+        // Update the app state
+        this.updateFromURL(position, action);
     }
 
     async updateActionsForPosition() {
         const actions = await this.discoverActions(this.currentPosition);
         this.generateActionButtons(actions);
         
-        // Set default action for the new position
-        this.currentAction = actions.includes('open') ? 'open' : actions[0];
-        this.setActiveAction(document.querySelector(`[data-action="${this.currentAction}"]`));
+        // Try to maintain the current action if it's available for the new position
+        // Otherwise, use the first available action
+        if (!actions.includes(this.currentAction)) {
+            this.currentAction = actions.includes('open') ? 'open' : actions[0];
+            // Update URL to reflect the new action
+            this.updateURL(this.currentPosition, this.currentAction);
+        }
+        
+        // Update the action UI
+        this.updateActionUI(this.currentAction);
     }
 
-    setActivePosition(activeBtn) {
-        document.querySelectorAll('.position-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        activeBtn.classList.add('active');
-    }
 
-    setActiveAction(activeBtn) {
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        activeBtn.classList.add('active');
-    }
 
     async loadAndDisplayRange() {
         const range = await window.rangeManager.loadRange(this.currentPosition, this.currentAction);
@@ -190,19 +279,19 @@ class PokerRangeTrainer {
         const handCountEl = document.querySelector('.hand-count');
         const descriptionEl = document.querySelector('.range-description');
 
-        if (range.callPercentage) {
+        if (range.call) {
             // Range has both raise and call percentages
-            const ranges = window.rangeManager.calculateCallRangeHands(range.percentage, range.callPercentage);
+            const ranges = window.rangeManager.calculateCallRangeHands(range.raise, range.call);
             const totalHands = ranges.raise.length + ranges.call.length;
             
-            percentageEl.textContent = `${range.percentage}% raise, ${range.callPercentage}% call`;
+            percentageEl.textContent = `${range.raise}% raise, ${range.call}% call`;
             handCountEl.textContent = `(${totalHands} hands)`;
             descriptionEl.textContent = range.description;
         } else {
             // Range has only raise percentage
-            const handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
+            const handsInRange = window.rangeManager.calculateRangeHands(range.raise);
             
-            percentageEl.textContent = `${range.percentage}%`;
+            percentageEl.textContent = `${range.raise}%`;
             handCountEl.textContent = `(${handsInRange.length} hands)`;
             descriptionEl.textContent = range.description;
         }
@@ -223,14 +312,14 @@ class PokerRangeTrainer {
         
         let handsInRange, callHands;
         
-        if (range.callPercentage) {
+        if (range.call) {
             // Range has both raise and call percentages
-            const ranges = window.rangeManager.calculateCallRangeHands(range.percentage, range.callPercentage);
+            const ranges = window.rangeManager.calculateCallRangeHands(range.raise, range.call);
             handsInRange = ranges.raise;
             callHands = ranges.call;
         } else {
             // Range has only raise percentage
-            handsInRange = window.rangeManager.calculateRangeHands(range.percentage);
+            handsInRange = window.rangeManager.calculateRangeHands(range.raise);
             callHands = [];
         }
         
@@ -353,4 +442,4 @@ class PokerRangeTrainer {
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new PokerRangeTrainer();
-}); 
+});

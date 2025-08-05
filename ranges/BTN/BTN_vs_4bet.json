@@ -2,5 +2,5 @@
   "position": "BTN",
   "action": "vs_4bet",
   "description": "BTN vs 4-bet range",
-  "percentage": 8.0
+  "raise": 8.0
 } 
