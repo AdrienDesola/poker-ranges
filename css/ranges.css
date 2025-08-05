@@ -12,12 +12,6 @@
     aspect-ratio: 1;
 }
 
-.range-grid::before {
-    content: '';
-    grid-column: 1;
-    grid-row: 1;
-}
-
 .hand-cell {
     aspect-ratio: 1;
     display: flex;
@@ -73,18 +67,7 @@
     /* No background color - let action classes control color */
 }
 
-/* Column and row headers */
-.range-grid::before {
-    content: '';
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.range-grid::after {
-    content: '';
-    grid-column: 1;
-    grid-row: 1;
-}
+/* Grid layout is now clean without interfering pseudo-elements */
 
 /* Responsive design */
 @media (max-width: 768px) {

@@ -140,20 +140,20 @@ class PokerRangeTrainer {
     }
 
     generateAllHands() {
-        // Generate hands in proper 13x13 grid order
-        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+        // Generate hands in the exact order for 13x13 grid
         const hands = [];
+        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
         
         for (let i = 0; i < ranks.length; i++) {
             for (let j = 0; j < ranks.length; j++) {
                 if (i === j) {
-                    // Pair
+                    // Pairs on diagonal
                     hands.push(ranks[i] + ranks[j]);
                 } else if (i < j) {
-                    // Suited
+                    // Suited hands in upper triangle
                     hands.push(ranks[i] + ranks[j] + 's');
                 } else {
-                    // Offsuit
+                    // Offsuit hands in lower triangle
                     hands.push(ranks[j] + ranks[i] + 'o');
                 }
             }
