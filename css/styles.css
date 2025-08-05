@@ -356,6 +356,21 @@ main {
     color: white;
 }
 
+.hand-cell.has-override {
+    position: relative;
+}
+
+.hand-cell.has-override::after {
+    content: '*';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    color: #e53e3e;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 1;
+}
+
 /* Hand details */
 .hand-details {
     background: white;
@@ -390,6 +405,16 @@ main {
 .hand-info .hand-rank {
     color: #667eea;
     font-weight: 500;
+}
+
+.hand-info .override-info {
+    font-weight: 600;
+    color: #e53e3e;
+    background-color: #fed7d7;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 0.5rem;
 }
 
 /* Footer */

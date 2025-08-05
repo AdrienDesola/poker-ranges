@@ -2,5 +2,33 @@
   "position": "UTG",
   "action": "open",
   "description": "UTG opening range",
-  "raise": 20
+  "raise": 20,
+  "overrides": [
+    {
+      "AA": "raise",
+      "KK": "raise",
+      "QQ": "raise",
+      "JJ": "raise",
+      "TT": "raise",
+      "AKs": "raise",
+      "AQs": "raise",
+      "AJs": "raise",
+      "AKo": "raise",
+      "AQo": "raise",
+      "AJo": "call",
+      "KQs": "raise",
+      "KJs": "call",
+      "KQo": "call",
+      "QJs": "call",
+      "JTs": "fold",
+      "T9s": "fold",
+      "98s": "fold",
+      "87s": "fold",
+      "76s": "fold",
+      "65s": "fold",
+      "54s": "fold",
+      "43s": "fold",
+      "32s": "fold"
+    }
+  ]
 }

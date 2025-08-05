@@ -198,6 +198,16 @@ class PokerRangeTrainer {
                 if (this.currentRange) {
                     const action = this.getHandAction(handName);
                     cell.classList.add(action);
+                    
+                    // Check if this hand has an override and add indicator
+                    if (this.currentRange.overrides && this.currentRange.overrides.length > 0) {
+                        for (const override of this.currentRange.overrides) {
+                            if (override[handName]) {
+                                cell.classList.add('has-override');
+                                break;
+                            }
+                        }
+                    }
                 } else {
                     cell.classList.add('neutral');
                 }
@@ -217,6 +227,15 @@ class PokerRangeTrainer {
 
     getHandAction(handName) {
         if (!this.currentRange) return 'neutral';
+        
+        // Check for overrides first
+        if (this.currentRange.overrides && this.currentRange.overrides.length > 0) {
+            for (const override of this.currentRange.overrides) {
+                if (override[handName]) {
+                    return override[handName];
+                }
+            }
+        }
         
         const handIndex = this.hands.findIndex(hand => hand.name === handName);
         if (handIndex === -1) return 'neutral';
@@ -259,11 +278,25 @@ class PokerRangeTrainer {
         if (hand) {
             const handType = this.getHandType(this.selectedHand);
             const rank = hand.rank + 1;
+            const action = this.getHandAction(this.selectedHand);
+            
+            // Check if this hand has an override
+            let overrideInfo = '';
+            if (this.currentRange && this.currentRange.overrides && this.currentRange.overrides.length > 0) {
+                for (const override of this.currentRange.overrides) {
+                    if (override[this.selectedHand]) {
+                        overrideInfo = `<p class="override-info">Override: ${override[this.selectedHand].toUpperCase()}</p>`;
+                        break;
+                    }
+                }
+            }
             
             handInfo.innerHTML = `
                 <p class="hand-type">${this.selectedHand} - ${handType}</p>
                 <p class="hand-rank">Rank: ${rank}/169</p>
                 <p>Strength: ${this.getStrengthDescription(rank)}</p>
+                <p>Action: ${action.toUpperCase()}</p>
+                ${overrideInfo}
             `;
         } else {
             handInfo.innerHTML = '<p>Hand information not available</p>';
@@ -300,6 +333,13 @@ class PokerRangeTrainer {
             if (this.currentRange.call) {
                 percentageText += ` | Call: ${this.currentRange.call}%`;
             }
+            
+            // Add override indicator if overrides exist
+            if (this.currentRange.overrides && this.currentRange.overrides.length > 0) {
+                const overrideCount = Object.keys(this.currentRange.overrides[0]).length;
+                percentageText += ` | ${overrideCount} hand overrides`;
+            }
+            
             percentageEl.textContent = percentageText;
             
             const totalHands = this.hands.length;

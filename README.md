@@ -36,16 +36,6 @@ python3 -m http.server 8000
 ```
 Then open http://localhost:8000 in your browser.
 
-### Using Node.js
-```bash
-npx serve .
-```
-
-### Using PHP
-```bash
-php -S localhost:8000
-```
-
 ## Data Structure
 
 The application uses JSON files to store range data:
