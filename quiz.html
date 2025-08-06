@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Range Quiz - Poker Range Trainer</title>
+    <meta name="description" content="Test your poker range knowledge with auto-generated quizzes">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Poker Range Quiz</h1>
+        <p>Test your knowledge of poker hand ranges</p>
+        <nav>
+            <a href="index.html" class="nav-link">← Back to Study Mode</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="quiz-section">
+            <div class="quiz-container">
+                <div class="question-header">
+                    <span id="question-progress">Loading...</span>
+                </div>
+                
+                <div class="question-content">
+                    <h2 id="question-text">Loading question...</h2>
+                </div>
+                
+                <div class="question-options">
+                    <button class="option-btn" data-option="0">
+                        <span class="option-text">Loading...</span>
+                    </button>
+                    <button class="option-btn" data-option="1">
+                        <span class="option-text">Loading...</span>
+                    </button>
+                    <button class="option-btn" data-option="2">
+                        <span class="option-text">Loading...</span>
+                    </button>
+                    <button class="option-btn" data-option="3">
+                        <span class="option-text">Loading...</span>
+                    </button>
+                </div>
+                
+                <div class="question-actions">
+                    <button id="check-btn" class="primary-btn">Check Answer</button>
+                    <button id="new-question-btn" class="secondary-btn">New Question</button>
+                </div>
+                
+                <div id="feedback" class="feedback hidden">
+                    <p id="feedback-text"></p>
+                    <button id="next-question-btn" class="primary-btn">Next Question</button>
+                </div>
+                
+                <div id="suggestions" class="suggestions hidden">
+                    <h3>Continue Training:</h3>
+                    <div class="suggestion-links">
+                        <a id="same-range-link" href="#" class="suggestion-link">Same Range</a>
+                        <a id="same-type-link" href="#" class="suggestion-link">Same Question Type</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Poker Range Trainer - Quiz Mode</p>
+        <p>Deep stack cash game training (100BB+)</p>
+    </footer>
+
+    <script src="js/quiz.js"></script>
+</body>
+</html> 
