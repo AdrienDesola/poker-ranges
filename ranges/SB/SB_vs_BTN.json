@@ -1,7 +1,7 @@
 {
   "position": "SB",
   "action": "vs_BTN",
-  "description": "Small Blind vs Button range",
-  "raise": 40.0,
-  "call": 30.0
+  "description": "SB vs BTN range",
+  "raise": 45.3,
+  "call": 22.7
 } 

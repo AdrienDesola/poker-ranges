@@ -1,7 +1,6 @@
 {
   "position": "HJ",
   "action": "vs_limp",
-  "description": "Hijack vs limp range",
-  "raise": 25.3,
-  "call": 14.7
+  "description": "HJ vs limp range",
+  "raise": 22.8
 } 

@@ -2,24 +2,5 @@
   "position": "BB",
   "action": "open",
   "description": "BB opening range",
-  "raise": 51.1,
-  "overrides": [
-    {
-      "AK": "raise",
-      "AQs": "raise",
-      "AJs": "call",
-      "KQs": "raise",
-      "KJs": "call",
-      "QJs": "call",
-      "JTs": "call",
-      "T9s": "fold",
-      "98s": "fold",
-      "87s": "fold",
-      "76s": "fold",
-      "65s": "fold",
-      "54s": "fold",
-      "43s": "fold",
-      "32s": "fold"
-    }
-  ]
+  "raise": 77.8
 } 

@@ -1,7 +1,7 @@
 {
   "position": "BB",
   "action": "vs_SB",
-  "description": "Big Blind vs Small Blind range",
-  "raise": 25.0,
-  "call": 15.0
+  "description": "BB vs SB range",
+  "raise": 52.4,
+  "call": 28.3
 } 

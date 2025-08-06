@@ -1,7 +1,6 @@
 {
   "position": "CO",
   "action": "vs_limp",
-  "description": "Cutoff vs limp range",
-  "raise": 32.1,
-  "call": 18.5
+  "description": "CO vs limp range",
+  "raise": 18.4
 } 
