@@ -2,7 +2,16 @@
 const ACTION_MAP = {
     'open': 'Open',
     'vs_limp': 'vs Limp',
-    'vs_3bet': 'vs 3-bet',
+    'vs_SB': 'vs SB',
+    'vs_BB': 'vs BB',
+    'vs_UTG': 'vs UTG',
+    'vs_UTG+1': 'vs UTG+1',
+    'vs_UTG+2': 'vs UTG+2',
+    'vs_HJ': 'vs HJ',
+    'vs_LJ': 'vs LJ',
+    'vs_CO': 'vs CO',
+    'vs_BTN': 'vs BTN',
+    'vs_MP': 'vs MP',
 };
 
 // Poker Range Trainer - Main Application

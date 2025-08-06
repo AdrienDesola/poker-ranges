@@ -1,0 +1,7 @@
+{
+  "position": "BTN",
+  "action": "vs_UTG",
+  "description": "Button vs UTG range",
+  "raise": 35.0,
+  "call": 25.0
+} 

@@ -13,7 +13,7 @@ https://adriendesola.github.io/poker-ranges
   - **Red**: Fold hands (weak hands to fold)
   - **Gray**: Neutral (when no range is available)
 - **Position-Based Ranges**: Support for all standard poker positions (UTG, MP, CO, BTN, SB, BB)
-- **Action Scenarios**: Opening ranges, vs 3-bet, vs 4-bet
+- **Action Scenarios**: Opening ranges, vs limp, and position-specific vs ranges (e.g., BB vs SB, BTN vs MP)
 - **Interactive Selection**: Click any hand to see detailed information
 - **URL-Based Navigation**: Share specific position/action combinations via URL
 - **Responsive Design**: Works on desktop and mobile devices
@@ -21,7 +21,7 @@ https://adriendesola.github.io/poker-ranges
 ## How to Use
 
 1. **Select Position**: Choose your poker position (UTG, MP, CO, BTN, SB, BB)
-2. **Select Action**: Choose the action scenario (Open, vs 3-bet, vs 4-bet)
+2. **Select Action**: Choose the action scenario (Open, vs Limp, or position-specific vs ranges like vs SB, vs MP, etc.)
 3. **View Range**: The hand grid will show color-coded hands based on the selected range
 4. **Click Hands**: Click on any hand to see detailed information including hand strength rank
 5. **Share Links**: The URL updates automatically, so you can bookmark or share specific ranges
@@ -55,7 +55,7 @@ The application uses JSON files to store range data:
 ```
 
 - `position`: Poker position (UTG, MP, CO, BTN, SB, BB)
-- `action`: Action scenario (open, vs_3bet, vs_4bet)
+- `action`: Action scenario (open, vs_limp, vs_SB, vs_BB, vs_UTG, vs_UTG+1, vs_UTG+2, vs_HJ, vs_LJ, vs_CO, vs_BTN, vs_MP)
 - `description`: Human-readable description
 - `raise`: Percentage of hands to raise with (0-100)
 - `call`: Optional percentage of hands to call with (0-100)
@@ -67,6 +67,28 @@ To add new range data:
 1. Create a new JSON file in the appropriate position folder
 2. Follow the format shown above
 3. The application will automatically discover and load the new range
+
+## Position-Specific vs Ranges
+
+The application now supports position-specific "vs" ranges that are more meaningful than generic "vs 3-bet" ranges. These ranges show how one position should respond to actions from another specific position.
+
+### Examples:
+- `BB_vs_SB.json`: Big Blind responding to Small Blind action
+- `BTN_vs_MP.json`: Button responding to Middle Position action
+- `CO_vs_UTG.json`: Cutoff responding to UTG action
+- `SB_vs_BTN.json`: Small Blind responding to Button action
+
+### Naming Convention:
+- `vs_SB`: vs Small Blind
+- `vs_BB`: vs Big Blind
+- `vs_UTG`: vs UTG
+- `vs_UTG+1`: vs UTG+1
+- `vs_UTG+2`: vs UTG+2
+- `vs_HJ`: vs Hijack
+- `vs_LJ`: vs Lojack
+- `vs_CO`: vs Cutoff
+- `vs_BTN`: vs Button
+- `vs_MP`: vs Middle Position
 
 # Range Overrides
 

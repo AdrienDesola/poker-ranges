@@ -1,0 +1,7 @@
+{
+  "position": "BTN",
+  "action": "vs_MP",
+  "description": "Button vs Middle Position range",
+  "raise": 30.0,
+  "call": 20.0
+} 

@@ -1,0 +1,7 @@
+{
+  "position": "CO",
+  "action": "vs_UTG",
+  "description": "Cutoff vs UTG range",
+  "raise": 30.0,
+  "call": 20.0
+} 

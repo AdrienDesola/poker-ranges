@@ -1,0 +1,7 @@
+{
+  "position": "SB",
+  "action": "vs_BTN",
+  "description": "Small Blind vs Button range",
+  "raise": 40.0,
+  "call": 30.0
+} 
