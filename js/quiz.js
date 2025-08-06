@@ -35,7 +35,14 @@ class SimpleQuiz {
         // Determine which ranges to load
         let filesToLoad = [
             { path: './ranges/UTG/UTG_open.json', position: 'UTG' },
-            { path: './ranges/BTN/BTN_open.json', position: 'BTN' }
+            { path: './ranges/UTG+1/UTG+1_open.json', position: 'UTG+1' },
+            { path: './ranges/UTG+2/UTG+2_open.json', position: 'UTG+2' },
+            { path: './ranges/LJ/LJ_open.json', position: 'LJ' },
+            { path: './ranges/HJ/HJ_open.json', position: 'HJ' },
+            { path: './ranges/CO/CO_open.json', position: 'CO' },
+            { path: './ranges/BTN/BTN_open.json', position: 'BTN' },
+            { path: './ranges/SB/SB_open.json', position: 'SB' },
+            { path: './ranges/BB/BB_open.json', position: 'BB' }
         ];
         
         if (forcedRanges) {
