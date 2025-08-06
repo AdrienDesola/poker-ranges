@@ -68,6 +68,82 @@ To add new range data:
 2. Follow the format shown above
 3. The application will automatically discover and load the new range
 
+# Range Overrides
+
+The poker range trainer now supports hand-specific overrides in range files. This allows you to specify exact actions for individual hands, overriding the percentage-based calculations.
+
+## How to Use Overrides
+
+Add an `overrides` array to your range JSON files:
+
+```json
+{
+  "position": "BB",
+  "action": "open",
+  "description": "BB opening range",
+  "raise": 51.1,
+  "overrides": [
+    {
+      "AK": "raise",
+      "AQs": "raise",
+      "AJs": "call",
+      "KQs": "raise",
+      "KJs": "call",
+      "QJs": "call",
+      "JTs": "call",
+      "T9s": "fold",
+      "98s": "fold",
+      "87s": "fold",
+      "76s": "fold",
+      "65s": "fold",
+      "54s": "fold",
+      "43s": "fold",
+      "32s": "fold"
+    }
+  ]
+}
+```
+
+## Override Structure
+
+- **overrides**: An array containing override objects
+- Each override object maps hand names to actions
+- Valid actions: `"raise"`, `"call"`, `"fold"`
+- Hand names follow the standard format: `"AK"`, `"AQs"`, `"KJo"`, etc.
+
+## How It Works
+
+1. When determining a hand's action, the system first checks for overrides
+2. If a hand has an override, that action is used
+3. If no override exists, the percentage-based calculation is used
+4. Overrides take precedence over the percentage-based system
+
+## Visual Indicators
+
+- Hands with overrides will show the override action in the grid
+- When you click on a hand with an override, it will display "Override: ACTION" in red
+- The range info will show the number of hand overrides
+
+## Example Use Cases
+
+- **Tight ranges**: Override specific hands to fold even if they fall within the raise percentage
+- **Loose ranges**: Override weak hands to call when they would normally fold
+- **Mixed strategies**: Use overrides to implement mixed strategies for specific hands
+- **Position-specific adjustments**: Override hands differently based on position
+
+## Hand Naming Convention
+
+- **Pairs**: `"AA"`, `"KK"`, `"QQ"`, etc.
+- **Suited**: `"AKs"`, `"AQs"`, `"AJs"`, etc.
+- **Offsuit**: `"AKo"`, `"AQo"`, `"AJo"`, etc.
+
+## Tips
+
+- Use overrides sparingly for maximum flexibility
+- Consider the overall range percentages when adding overrides
+- Test your ranges to ensure they make sense strategically
+- Overrides are particularly useful for fine-tuning ranges based on specific game conditions 
+
 ## Browser Compatibility
 
 This application works in all modern browsers that support:
