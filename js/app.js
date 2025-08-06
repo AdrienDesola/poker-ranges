@@ -282,13 +282,47 @@ class PokerRangeTrainer {
             
             // Check if this hand has an override
             let overrideInfo = '';
+            let hasOverride = false;
+            let overrideAction = '';
+            
             if (this.currentRange && this.currentRange.overrides && this.currentRange.overrides.length > 0) {
                 for (const override of this.currentRange.overrides) {
                     if (override[this.selectedHand]) {
-                        overrideInfo = `<p class="override-info">Override: ${override[this.selectedHand].toUpperCase()}</p>`;
+                        hasOverride = true;
+                        overrideAction = override[this.selectedHand];
                         break;
                     }
                 }
+            }
+            
+            // Calculate what the action would be without override
+            let defaultAction = 'fold';
+            if (this.currentRange) {
+                const handIndex = this.hands.findIndex(h => h.name === this.selectedHand);
+                if (handIndex !== -1) {
+                    const totalHands = this.hands.length;
+                    const raisePercentage = this.currentRange.raise || 0;
+                    const callPercentage = this.currentRange.call || 0;
+                    
+                    const raiseCount = Math.floor((raisePercentage / 100) * totalHands);
+                    const callCount = Math.floor((callPercentage / 100) * totalHands);
+                    
+                    if (handIndex < raiseCount) {
+                        defaultAction = 'raise';
+                    } else if (handIndex < raiseCount + callCount) {
+                        defaultAction = 'call';
+                    }
+                }
+            }
+            
+            if (hasOverride) {
+                overrideInfo = `
+                    <div class="override-details">
+                        <p class="override-info">Override: ${overrideAction.toUpperCase()}</p>
+                        <p class="default-action">Default: ${defaultAction.toUpperCase()}</p>
+                        <p class="override-explanation">This hand's action has been manually overridden in the range configuration.</p>
+                    </div>
+                `;
             }
             
             handInfo.innerHTML = `
