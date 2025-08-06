@@ -59,6 +59,7 @@ class SimpleQuiz {
             try {
                 console.log(`[Quiz] Loading file: ${file.path}`);
                 const response = await fetch(file.path);
+                console.log(`[Quiz] Response status for ${file.path}: ${response.status} ${response.statusText}`);
                 
                 if (response.ok) {
                     const data = await response.json();

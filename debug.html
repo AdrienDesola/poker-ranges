@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug JSON Loading</title>
+</head>
+<body>
+    <h1>Debug JSON Loading</h1>
+    <div id="results"></div>
+    
+    <script>
+        const filesToTest = [
+            './ranges/UTG/UTG_open.json',
+            './ranges/BTN/BTN_open.json',
+            './ranges/SB/SB_open.json'
+        ];
+        
+        const resultsDiv = document.getElementById('results');
+        
+        async function testFile(filePath) {
+            try {
+                console.log(`Testing: ${filePath}`);
+                const response = await fetch(filePath);
+                console.log(`Status: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Data:`, data);
+                    resultsDiv.innerHTML += `<p style="color: green;">✅ ${filePath} - OK</p>`;
+                } else {
+                    console.error(`Failed: ${response.status} ${response.statusText}`);
+                    resultsDiv.innerHTML += `<p style="color: red;">❌ ${filePath} - ${response.status} ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                console.error(`Error loading ${filePath}:`, error);
+                resultsDiv.innerHTML += `<p style="color: red;">❌ ${filePath} - Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function runTests() {
+            resultsDiv.innerHTML = '<h2>Testing JSON files...</h2>';
+            for (const file of filesToTest) {
+                await testFile(file);
+            }
+        }
+        
+        runTests();
+    </script>
+</body>
+</html> 
